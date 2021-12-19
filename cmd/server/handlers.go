@@ -115,6 +115,7 @@ func handleRequestRankModePacket(l *slog.Instance, conn net.Conn, v proto.Reques
 
 	if err != nil {
 		log.Error("Error: could not get Rank Mode packet %s", err.Error())
+		rm = proto.MakeRankModePacket(nil)
 	}
 
 	PrimeServer.SendPacket(conn, rm.ToBinary())
