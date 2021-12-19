@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net"
 	"fmt"
+	"net"
 
 	"github.com/HUEBRTeam/PrimeServer"
 	"github.com/HUEBRTeam/PrimeServer/cmd/server/network"
@@ -92,18 +92,31 @@ func handleMachineInfoPacket(l *slog.Instance, conn net.Conn, v proto.MachineInf
 }
 
 func handleRequestWorldBestPacket(l *slog.Instance, conn net.Conn, v proto.RequestWorldBestPacket) {
-	wb, err := network.RetrieveWorldBest(config.APIKey, config.ServerAddress, config.ScoreType)
+	if config.Online {
+		wb, err := network.RetrieveWorldBest(config.APIKey, config.ServerAddress, config.ScoreType)
+	} else {
+		wb, err := profileManager.GetStorageBackend().GetWorldBest()
+	}
+
 	if err != nil {
 		log.Error("Error: could not retrieve World Best packet %s", err.Error())
+		wb = proto.MakeWorldBestPacket(nil)
 	}
+
 	PrimeServer.SendPacket(conn, wb.ToBinary())
 }
 
 func handleRequestRankModePacket(l *slog.Instance, conn net.Conn, v proto.RequestRankModePacket) {
-	rm, err := profileManager.GetStorageBackend().GetRankMode()
+	if config.Online {
+		rm, err := network.RetrieveRankMode(config.APIKey, config.ServerAddress, config.ScoreType)
+	} else {
+		rm, err := profileManager.GetStorageBackend().GetRankMode()
+	}
+
 	if err != nil {
 		log.Error("Error: could not get Rank Mode packet %s", err.Error())
 	}
+
 	PrimeServer.SendPacket(conn, rm.ToBinary())
 }
 

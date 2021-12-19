@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	ConnPort   = "60010"
+	ConnPort   = "4989"
 	ConnType   = "tcp"
 	ConfigFile = "config.json"
 	ProfileDir = "profiles/"
